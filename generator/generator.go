@@ -18,12 +18,12 @@ func init() {
 		"funcName": strcase.ToCamel,
 	}
 
-	apiTmpl, err = template.New("api.tmpl.go").Funcs(funcMap).Parse(FSMustString(false, "/tmpl/api.tmpl.go"))
+	apiTmpl, err = template.New("api.tmpl").Funcs(funcMap).Parse(FSMustString(false, "/tmpl/api.tmpl"))
 	if err != nil {
 		panic(err)
 	}
 
-	typesTmpl, err = template.New("types.tmpl.go").Parse(FSMustString(false, "/tmpl/types.tmpl.go"))
+	typesTmpl, err = template.New("types.tmpl").Parse(FSMustString(false, "/tmpl/types.tmpl"))
 	if err != nil {
 		panic(err)
 	}
