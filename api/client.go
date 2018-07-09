@@ -198,3 +198,20 @@ func (c *Client) GetAllModels() ([]string, error) {
 	}
 	return models, err
 }
+
+// Ref returns the model,id of a external identifier. This function is inspired
+// in Odoo new api self.env.ref function.
+func (c *Client) Ref(module, name string) (string, int64, error) {
+	var content []map[string]interface{}
+	err := c.DoRequest("search_read", "ir.model.data",
+		[]interface{}{
+			[]interface{}{
+				[]string{"module", "=", module},
+				[]string{"name", "=", name},
+			},
+		}, nil, &content)
+	if err != nil {
+		return "", 0, err
+	}
+	return content[0]["model"].(string), content[0]["res_id"].(int64), nil
+}
