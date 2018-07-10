@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/llonchj/godoo/generator"
 
@@ -35,14 +36,36 @@ func upsert(cmd *cobra.Command, args []string) {
 
 	pkg, err := cmd.PersistentFlags().GetString("package")
 	if err != nil {
-		return
-	}
-	path, err := cmd.PersistentFlags().GetString("path")
-	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
-	dir := filepath.Join(generator.GetGoPath(), "src", path, pkg)
+	path, err := cmd.PersistentFlags().GetString("path")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	dir := filepath.Join(path, pkg)
+	if !filepath.IsAbs(path) {
+		wd, err := os.Getwd()
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		if strings.HasSuffix(wd, path) {
+			dir = filepath.Join(wd, pkg)
+		} else {
+			dir = filepath.Join(wd, path, pkg)
+		}
+		if path == "" {
+			_, path = filepath.Split(wd)
+		}
+
+	}
+	// fmt.Printf("PKG: %s PATH: %s DIR: %s\n", pkg, path, dir)
+
 	typesDir := filepath.Join(dir, "types")
 	if _, err := os.Stat(typesDir); os.IsNotExist(err) {
 		err = os.MkdirAll(typesDir, 0755)
@@ -51,7 +74,7 @@ func upsert(cmd *cobra.Command, args []string) {
 			return
 		}
 	}
-
+	// fmt.Println("PATH ", path)
 	err = generator.GenerateBaseAPI(pkg, path, dir)
 	if err != nil {
 		fmt.Println(err.Error())

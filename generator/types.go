@@ -7,7 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/iancoleman/strcase"
+	"github.com/llonchj/godoo/snaker"
+	// "github.com/iancoleman/strcase"
 )
 
 var convertTypes = map[string]string{
@@ -68,13 +69,13 @@ func GenerateBaseTypes(pkg, path, basePath string) error {
 
 func GenerateTypes(pkg, path, basePath, model string, fields map[string]string) error {
 	snakeModel := strings.Replace(model, ".", "_", -1)
-	modelType := ModelType{ModelName: model, CamelModelName: strcase.ToCamel(snakeModel)}
+	modelType := ModelType{ModelName: model, CamelModelName: snaker.SnakeToCamel(snakeModel)}
 	for fieldName, fieldType := range fields {
 		convertType := convertTypes[fieldType]
 		if convertType == "time.Time" {
 			modelType.Time = true
 		}
-		f := Field{Name: strcase.ToCamel(fieldName), SnakeName: fieldName, Type: convertType, NilType: convertNilTypes[fieldType]}
+		f := Field{Name: snaker.SnakeToCamel(fieldName), SnakeName: fieldName, Type: convertType, NilType: convertNilTypes[fieldType]}
 		modelType.Fields = append(modelType.Fields, f)
 	}
 

@@ -24,7 +24,7 @@ func getClient(cmd *cobra.Command) (*api.Client, error) {
 	}
 	config := &api.Config{
 		DbName:   db,
-		Admin:    admin,
+		User:     admin,
 		Password: password,
 		URI:      uri,
 	}

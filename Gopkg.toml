@@ -27,15 +27,11 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/iancoleman/strcase"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/kolo/xmlrpc"
 
 [[constraint]]
   name = "github.com/spf13/cobra"
-  version = "0.0.2"
+  version = "0.0.3"
 
 [prune]
   go-tests = true

@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/iancoleman/strcase"
-  packages = ["."]
-  revision = "90d371a664d668ca3e61d3ddddf1916662959f11"
-
-[[projects]]
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
@@ -34,6 +28,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7d58a4cff7d5c2490dfbeb1084f1c75a230657700c2f4e6a32a4a1dad499e058"
+  inputs-digest = "591c68e9e7d2d622bb8582e9128dedafac7c55920757d852fe426b682a2d814c"
   solver-name = "gps-cdcl"
   solver-version = 1

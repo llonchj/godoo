@@ -24,15 +24,15 @@ type UpdateField struct {
 }
 
 type NilableType interface {
-	Type_() interface{}
+	GetType() interface{}
 }
 
 type Type interface {
-	NilableType_() interface{}
+	NilableType() interface{}
 }
 
 type Many2One struct {
-	Id   int64
+	ID   int64
 	Name string
 }
 
@@ -70,7 +70,7 @@ func load(ns interface{}, s interface{}) interface{} {
 				continue
 			}
 			if se.Field(i).Kind() == reflect.Struct {
-				se.Field(i).Set(reflect.ValueOf(Many2One{Id: f.Elem().Index(0).Elem().Int(), Name: f.Elem().Index(1).Elem().String()}))
+				se.Field(i).Set(reflect.ValueOf(Many2One{ID: f.Elem().Index(0).Elem().Int(), Name: f.Elem().Index(1).Elem().String()}))
 				continue
 			}
 		}

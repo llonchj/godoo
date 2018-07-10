@@ -5,7 +5,8 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/iancoleman/strcase"
+	"github.com/llonchj/godoo/snaker"
+	// "github.com/iancoleman/strcase"
 )
 
 var apiTmpl *template.Template
@@ -15,7 +16,8 @@ func init() {
 	var err error
 
 	funcMap := template.FuncMap{
-		"funcName": strcase.ToCamel,
+		"funcName": snaker.SnakeToCamel,
+		// "funcName": strcase.ToCamel,
 	}
 
 	apiTmpl, err = template.New("api.tmpl").Funcs(funcMap).Parse(FSMustString(false, "/tmpl/api.tmpl"))
