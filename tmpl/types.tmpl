@@ -18,8 +18,8 @@ type {{ .CamelModelName }}Nil struct {
 //{{ .CamelModelName }}Model is the ODOO model name
 const {{ .CamelModelName }}Model = "{{ .ModelName }}"
 
-//{{ .CamelModelName }}Fields is the list of field names
-var {{ .CamelModelName }}Fields = []string{ {{ range .Fields }}
+//{{ .CamelModelName }}ModelFields is the list of field names
+var {{ .CamelModelName }}ModelFields = []string{ {{ range .Fields }}
 	"{{ .SnakeName }}",{{end}}
 }
 
