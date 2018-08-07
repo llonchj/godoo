@@ -32,7 +32,7 @@ type Session struct {
 	DbName   string
 	User     string
 	Password string
-	UID      int
+	UID      int64
 }
 
 //NewClient creates a new ODOO Client
@@ -78,7 +78,7 @@ func (c *Client) CompleteSession() error {
 	if !ok {
 		return errors.New("invalid session uid")
 	}
-	c.Session.UID = int(i)
+	c.Session.UID = i
 	return nil
 }
 
