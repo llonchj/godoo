@@ -1,5 +1,7 @@
 # godoo
 
+	go generate; and go install .
+
 > This project is a fork of [github.com/antony360/go-odoo](https://github.com/antony360/go-odoo)
 
 A Odoo API client enabling Go programs to interact with Odoo in a simple and uniform way.
