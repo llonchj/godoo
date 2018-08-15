@@ -1,12 +1,17 @@
 package api
 
 import (
+	"encoding/base64"
 	"errors"
 	"net/http"
 	"reflect"
 
 	"github.com/kolo/xmlrpc"
 	"github.com/llonchj/godoo/types"
+)
+
+var (
+	ErrUnauthorized = errors.New("unauthorized")
 )
 
 //Config structure for Odoo
@@ -18,12 +23,27 @@ type Config struct {
 	Transport http.RoundTripper
 }
 
+//CommonClient
+type CommonClient struct {
+	*xmlrpc.Client
+}
+
+//DBClient
+type DBClient struct {
+	*xmlrpc.Client
+}
+
+//ReportClient
+type ReportClient struct {
+	*xmlrpc.Client
+}
+
 //Client instance for ODOO
 type Client struct {
-	CommonClient *xmlrpc.Client
+	CommonClient *CommonClient
 	ObjectClient *xmlrpc.Client
-	DbClient     *xmlrpc.Client
-	ReportClient *xmlrpc.Client
+	DbClient     *DBClient
+	ReportClient *ReportClient
 	Session      *Session
 }
 
@@ -49,7 +69,7 @@ func (config *Config) NewClient() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	reportClient, err := GetObjectClient(config.URI, config.Transport)
+	reportClient, err := GetReportClient(config.URI, config.Transport)
 	if err != nil {
 		return nil, err
 	}
@@ -68,17 +88,11 @@ func (config *Config) NewClient() (*Client, error) {
 
 //CompleteSession authenticates credentials and sets session UID
 func (c *Client) CompleteSession() error {
-	var uid interface{}
-	var ok bool
-	err := c.CommonClient.Call("authenticate", []interface{}{c.Session.DbName, c.Session.User, c.Session.Password, ""}, &uid)
+	uid, err := c.CommonClient.Authenticate(c.Session.DbName, c.Session.User, c.Session.Password, nil)
 	if err != nil {
 		return err
 	}
-	i, ok := uid.(int64)
-	if !ok {
-		return errors.New("invalid session uid")
-	}
-	c.Session.UID = i
+	c.Session.UID = uid
 	return nil
 }
 
@@ -88,18 +102,30 @@ func GetObjectClient(uri string, transport http.RoundTripper) (*xmlrpc.Client, e
 }
 
 //GetCommonClient invokes common endpoint
-func GetCommonClient(uri string, transport http.RoundTripper) (*xmlrpc.Client, error) {
-	return xmlrpc.NewClient(uri+"/xmlrpc/2/common", transport)
+func GetCommonClient(uri string, transport http.RoundTripper) (*CommonClient, error) {
+	x, err := xmlrpc.NewClient(uri+"/xmlrpc/2/common", transport)
+	if err != nil {
+		return nil, err
+	}
+	return &CommonClient{Client: x}, nil
 }
 
 //GetDbClient invokes db endpoint
-func GetDbClient(uri string, transport http.RoundTripper) (*xmlrpc.Client, error) {
-	return xmlrpc.NewClient(uri+"/xmlrpc/2/db", transport)
+func GetDbClient(uri string, transport http.RoundTripper) (*DBClient, error) {
+	x, err := xmlrpc.NewClient(uri+"/xmlrpc/2/db", transport)
+	if err != nil {
+		return nil, err
+	}
+	return &DBClient{Client: x}, nil
 }
 
 //GetReportClient invokes report endpoint
-func GetReportClient(uri string, transport http.RoundTripper) (*xmlrpc.Client, error) {
-	return xmlrpc.NewClient(uri+"/xmlrpc/2/report", transport)
+func GetReportClient(uri string, transport http.RoundTripper) (*ReportClient, error) {
+	x, err := xmlrpc.NewClient(uri+"/xmlrpc/2/report", transport)
+	if err != nil {
+		return nil, err
+	}
+	return &ReportClient{Client: x}, nil
 }
 
 //Create instantiates a new model with given args returning elem
@@ -240,4 +266,138 @@ func (c *Client) Ref(module, name string) (string, int64, error) {
 		return "", 0, err
 	}
 	return content[0]["model"].(string), content[0]["res_id"].(int64), nil
+}
+
+type Version struct {
+	ServerVersion     string        `xmlrpc:"server_version"`
+	ServerVersionInfo []interface{} `xmlrpc:"server_version_info"`
+	ServerSerie       string        `xmlrpc:"server_serie"`
+	ProtocolVersion   int64         `xmlrpc:"protocol_version"`
+}
+
+//Authenticate
+//CompleteSession authenticates credentials and sets session UID
+func (c *CommonClient) Authenticate(DbName, User, Password string, UserAgentEnv map[string]interface{}) (int64, error) {
+	var uid interface{}
+	err := c.Call("authenticate", []interface{}{DbName, User, Password, UserAgentEnv}, &uid)
+	if err != nil {
+		return 0, err
+	}
+
+	i, ok := uid.(int64)
+	if !ok {
+		//Assume Odoo returned false
+		return 0, ErrUnauthorized
+	}
+	return i, nil
+}
+
+//Version
+func (c *CommonClient) Version() (*Version, error) {
+	var version Version
+	err := c.Call("version", []interface{}{}, &version)
+	if err != nil {
+		return nil, err
+	}
+	return &version, err
+}
+
+//Create invokes a method over a model
+func (c *DBClient) Create(adminPassword, db string, demo bool, lang, password string, result interface{}) error {
+	return c.Call("create_database",
+		[]interface{}{adminPassword, db, demo, lang, password, "admin", "ES"}, result)
+}
+
+//Duplicate invokes a method over a model
+func (c *DBClient) Duplicate(adminPassword, dst, src string, result interface{}) error {
+	return c.Call("duplicate_database",
+		[]interface{}{adminPassword, src, dst}, result)
+}
+
+//Rename invokes a method over a model
+func (c *DBClient) Rename(adminPassword, dst, src string) (bool, error) {
+	var result bool
+	err := c.Call("rename",
+		[]interface{}{adminPassword, src, dst}, &result)
+	return result, err
+}
+
+//Dump invokes a method over a model
+func (c *DBClient) Dump(adminPassword, db, format string) ([]byte, error) {
+	var result string
+	err := c.Call("dump", []interface{}{adminPassword, db, format}, &result)
+	if err != nil {
+		return nil, err
+	}
+	decoded, err := base64.StdEncoding.DecodeString(result)
+	return decoded, err
+}
+
+//Restore invokes a method over a model
+func (c *DBClient) Restore(adminPassword, db string, data []byte, copy bool) (bool, error) {
+	var result bool
+	err := c.Call("restore", []interface{}{adminPassword, db,
+		base64.StdEncoding.EncodeToString(data), copy}, &result)
+	return result, err
+}
+
+//List lists databases
+func (c *DBClient) List() ([]string, error) {
+	var dbList []string
+	err := c.Call("list", []interface{}{}, &dbList)
+	return dbList, err
+}
+
+type Languages [][]string
+
+//ListLanguages lists databases
+func (c *DBClient) ListLanguages() (Languages, error) {
+	var languages Languages
+	err := c.Call("list_lang", []interface{}{}, &languages)
+	return languages, err
+}
+
+// type Countries interface{}
+
+// //ListCountries lists databases
+// func (c *Client) ListCountries() (Countries, error) {
+// 	var countries Countries
+// 	err:= c.DbClient.Call("list_countries", []interface{}{}, &countries)
+// 	return countries, err
+// }
+
+//Exist lists databases
+func (c *DBClient) Exist(db string) (bool, error) {
+	var result bool
+	err := c.Call("db_exist", []interface{}{db}, &result)
+	return result, err
+}
+
+//Drop lists databases
+func (c *DBClient) Drop(adminPassword, db string) (bool, error) {
+	var result bool
+	err := c.Call("drop", []interface{}{adminPassword, db}, &result)
+	return result, err
+}
+
+//ServerVersion returns ODOO version
+func (c *DBClient) ServerVersion() (string, error) {
+	var result string
+	err := c.Call("server_version", []interface{}{}, &result)
+	return result, err
+}
+
+//ChangeAdminPassword changes SuperAdmin password
+func (c *DBClient) ChangeAdminPassword(old, new string) (bool, error) {
+	var result bool
+	err := c.Call("change_admin_password", []interface{}{old, new}, &result)
+	return result, err
+}
+
+//RenderReport renders a report
+func (c *ReportClient) RenderReport(ReportName string, IDs []int64) ([]byte, error) {
+	var result string
+	err := c.Call("render_report", []interface{}{ReportName, IDs}, &result)
+	decoded, err := base64.StdEncoding.DecodeString(result)
+	return decoded, err
 }

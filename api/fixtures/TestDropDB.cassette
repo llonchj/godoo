@@ -1,0 +1,112 @@
+{
+  "Name": "TestDropDB",
+  "Path": "./fixtures",
+  "Tracks": [
+    {
+      "Request": {
+        "Method": "POST",
+        "URL": {
+          "Scheme": "http",
+          "Opaque": "",
+          "User": null,
+          "Host": "localhost:8069",
+          "Path": "/xmlrpc/2/db",
+          "RawPath": "",
+          "ForceQuery": false,
+          "RawQuery": "",
+          "Fragment": ""
+        },
+        "Header": {
+          "Content-Length": [
+            "226"
+          ],
+          "Content-Type": [
+            "text/xml"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48bWV0aG9kQ2FsbD48bWV0aG9kTmFtZT5kcm9wPC9tZXRob2ROYW1lPjxwYXJhbXM+PHBhcmFtPjx2YWx1ZT48c3RyaW5nPmFkbWluPC9zdHJpbmc+PC92YWx1ZT48L3BhcmFtPjxwYXJhbT48dmFsdWU+PHN0cmluZz5nb2Rvb190ZXN0X3JlbmFtZWQ8L3N0cmluZz48L3ZhbHVlPjwvcGFyYW0+PC9wYXJhbXM+PC9tZXRob2RDYWxsPg=="
+      },
+      "Response": {
+        "Status": "200 OK",
+        "StatusCode": 200,
+        "Proto": "HTTP/1.0",
+        "ProtoMajor": 1,
+        "ProtoMinor": 0,
+        "Header": {
+          "Content-Length": [
+            "129"
+          ],
+          "Content-Type": [
+            "text/xml; charset=utf-8"
+          ],
+          "Date": [
+            "Wed, 15 Aug 2018 21:38:23 GMT"
+          ],
+          "Server": [
+            "Werkzeug/0.14.1 Python/3.7.0"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0nMS4wJz8+CjxtZXRob2RSZXNwb25zZT4KPHBhcmFtcz4KPHBhcmFtPgo8dmFsdWU+PGJvb2xlYW4+MTwvYm9vbGVhbj48L3ZhbHVlPgo8L3BhcmFtPgo8L3BhcmFtcz4KPC9tZXRob2RSZXNwb25zZT4K",
+        "ContentLength": 129,
+        "TransferEncoding": null,
+        "Trailer": null,
+        "TLS": null
+      },
+      "ErrType": "",
+      "ErrMsg": ""
+    },
+    {
+      "Request": {
+        "Method": "POST",
+        "URL": {
+          "Scheme": "http",
+          "Opaque": "",
+          "User": null,
+          "Host": "localhost:8069",
+          "Path": "/xmlrpc/2/db",
+          "RawPath": "",
+          "ForceQuery": false,
+          "RawQuery": "",
+          "Fragment": ""
+        },
+        "Header": {
+          "Content-Length": [
+            "218"
+          ],
+          "Content-Type": [
+            "text/xml"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48bWV0aG9kQ2FsbD48bWV0aG9kTmFtZT5kcm9wPC9tZXRob2ROYW1lPjxwYXJhbXM+PHBhcmFtPjx2YWx1ZT48c3RyaW5nPmFkbWluPC9zdHJpbmc+PC92YWx1ZT48L3BhcmFtPjxwYXJhbT48dmFsdWU+PHN0cmluZz5nb2Rvb190ZXN0PC9zdHJpbmc+PC92YWx1ZT48L3BhcmFtPjwvcGFyYW1zPjwvbWV0aG9kQ2FsbD4="
+      },
+      "Response": {
+        "Status": "200 OK",
+        "StatusCode": 200,
+        "Proto": "HTTP/1.0",
+        "ProtoMajor": 1,
+        "ProtoMinor": 0,
+        "Header": {
+          "Content-Length": [
+            "129"
+          ],
+          "Content-Type": [
+            "text/xml; charset=utf-8"
+          ],
+          "Date": [
+            "Wed, 15 Aug 2018 21:38:23 GMT"
+          ],
+          "Server": [
+            "Werkzeug/0.14.1 Python/3.7.0"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0nMS4wJz8+CjxtZXRob2RSZXNwb25zZT4KPHBhcmFtcz4KPHBhcmFtPgo8dmFsdWU+PGJvb2xlYW4+MTwvYm9vbGVhbj48L3ZhbHVlPgo8L3BhcmFtPgo8L3BhcmFtcz4KPC9tZXRob2RSZXNwb25zZT4K",
+        "ContentLength": 129,
+        "TransferEncoding": null,
+        "Trailer": null,
+        "TLS": null
+      },
+      "ErrType": "",
+      "ErrMsg": ""
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "Name": "TestCommonVersion",
+  "Path": "./fixtures",
+  "Tracks": [
+    {
+      "Request": {
+        "Method": "POST",
+        "URL": {
+          "Scheme": "http",
+          "Opaque": "",
+          "User": null,
+          "Host": "localhost:8069",
+          "Path": "/xmlrpc/2/common",
+          "RawPath": "",
+          "ForceQuery": false,
+          "RawQuery": "",
+          "Fragment": ""
+        },
+        "Header": {
+          "Content-Length": [
+            "112"
+          ],
+          "Content-Type": [
+            "text/xml"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48bWV0aG9kQ2FsbD48bWV0aG9kTmFtZT52ZXJzaW9uPC9tZXRob2ROYW1lPjxwYXJhbXM+PC9wYXJhbXM+PC9tZXRob2RDYWxsPg=="
+      },
+      "Response": {
+        "Status": "200 OK",
+        "StatusCode": 200,
+        "Proto": "HTTP/1.0",
+        "ProtoMajor": 1,
+        "ProtoMinor": 0,
+        "Header": {
+          "Content-Length": [
+            "660"
+          ],
+          "Content-Type": [
+            "text/xml; charset=utf-8"
+          ],
+          "Date": [
+            "Wed, 15 Aug 2018 21:37:37 GMT"
+          ],
+          "Server": [
+            "Werkzeug/0.14.1 Python/3.7.0"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0nMS4wJz8+CjxtZXRob2RSZXNwb25zZT4KPHBhcmFtcz4KPHBhcmFtPgo8dmFsdWU+PHN0cnVjdD4KPG1lbWJlcj4KPG5hbWU+c2VydmVyX3ZlcnNpb248L25hbWU+Cjx2YWx1ZT48c3RyaW5nPjExLjAtMjAxODA4MDY8L3N0cmluZz48L3ZhbHVlPgo8L21lbWJlcj4KPG1lbWJlcj4KPG5hbWU+c2VydmVyX3ZlcnNpb25faW5mbzwvbmFtZT4KPHZhbHVlPjxhcnJheT48ZGF0YT4KPHZhbHVlPjxpbnQ+MTE8L2ludD48L3ZhbHVlPgo8dmFsdWU+PGludD4wPC9pbnQ+PC92YWx1ZT4KPHZhbHVlPjxpbnQ+MDwvaW50PjwvdmFsdWU+Cjx2YWx1ZT48c3RyaW5nPmZpbmFsPC9zdHJpbmc+PC92YWx1ZT4KPHZhbHVlPjxpbnQ+MDwvaW50PjwvdmFsdWU+Cjx2YWx1ZT48c3RyaW5nPjwvc3RyaW5nPjwvdmFsdWU+CjwvZGF0YT48L2FycmF5PjwvdmFsdWU+CjwvbWVtYmVyPgo8bWVtYmVyPgo8bmFtZT5zZXJ2ZXJfc2VyaWU8L25hbWU+Cjx2YWx1ZT48c3RyaW5nPjExLjA8L3N0cmluZz48L3ZhbHVlPgo8L21lbWJlcj4KPG1lbWJlcj4KPG5hbWU+cHJvdG9jb2xfdmVyc2lvbjwvbmFtZT4KPHZhbHVlPjxpbnQ+MTwvaW50PjwvdmFsdWU+CjwvbWVtYmVyPgo8L3N0cnVjdD48L3ZhbHVlPgo8L3BhcmFtPgo8L3BhcmFtcz4KPC9tZXRob2RSZXNwb25zZT4K",
+        "ContentLength": 660,
+        "TransferEncoding": null,
+        "Trailer": null,
+        "TLS": null
+      },
+      "ErrType": "",
+      "ErrMsg": ""
+    }
+  ]
+}

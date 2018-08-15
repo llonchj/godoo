@@ -1,0 +1,59 @@
+{
+  "Name": "TestReport",
+  "Path": "./fixtures",
+  "Tracks": [
+    {
+      "Request": {
+        "Method": "POST",
+        "URL": {
+          "Scheme": "http",
+          "Opaque": "",
+          "User": null,
+          "Host": "localhost:8069",
+          "Path": "/xmlrpc/2/report",
+          "RawPath": "",
+          "ForceQuery": false,
+          "RawQuery": "",
+          "Fragment": ""
+        },
+        "Header": {
+          "Content-Length": [
+            "331"
+          ],
+          "Content-Type": [
+            "text/xml"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48bWV0aG9kQ2FsbD48bWV0aG9kTmFtZT5yZW5kZXJfcmVwb3J0PC9tZXRob2ROYW1lPjxwYXJhbXM+PHBhcmFtPjx2YWx1ZT48c3RyaW5nPmJhc2UucmVwb3J0X2lybW9kZWxvdmVydmlldzwvc3RyaW5nPjwvdmFsdWU+PC9wYXJhbT48cGFyYW0+PHZhbHVlPjxhcnJheT48ZGF0YT48dmFsdWU+PGludD4xPC9pbnQ+PC92YWx1ZT48dmFsdWU+PGludD4yPC9pbnQ+PC92YWx1ZT48dmFsdWU+PGludD4zPC9pbnQ+PC92YWx1ZT48L2RhdGE+PC9hcnJheT48L3ZhbHVlPjwvcGFyYW0+PC9wYXJhbXM+PC9tZXRob2RDYWxsPg=="
+      },
+      "Response": {
+        "Status": "200 OK",
+        "StatusCode": 200,
+        "Proto": "HTTP/1.0",
+        "ProtoMajor": 1,
+        "ProtoMinor": 0,
+        "Header": {
+          "Content-Length": [
+            "671"
+          ],
+          "Content-Type": [
+            "text/xml; charset=utf-8"
+          ],
+          "Date": [
+            "Wed, 15 Aug 2018 21:38:23 GMT"
+          ],
+          "Server": [
+            "Werkzeug/0.14.1 Python/3.7.0"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0nMS4wJz8+CjxtZXRob2RSZXNwb25zZT4KPGZhdWx0Pgo8dmFsdWU+PHN0cnVjdD4KPG1lbWJlcj4KPG5hbWU+ZmF1bHRDb2RlPC9uYW1lPgo8dmFsdWU+PGludD4xPC9pbnQ+PC92YWx1ZT4KPC9tZW1iZXI+CjxtZW1iZXI+CjxuYW1lPmZhdWx0U3RyaW5nPC9uYW1lPgo8dmFsdWU+PHN0cmluZz5UcmFjZWJhY2sgKG1vc3QgcmVjZW50IGNhbGwgbGFzdCk6CiAgRmlsZSAiL1VzZXJzL2xsb25jaGovUHJvamVjdHMvamlidS9qaWJ1LW9kb28vc3JjL29kb28vb2Rvby9zZXJ2aWNlL3dzZ2lfc2VydmVyLnB5IiwgbGluZSAxMjQsIGluIHdzZ2lfeG1scnBjCiAgICByZXN1bHQgPSBvZG9vLmh0dHAuZGlzcGF0Y2hfcnBjKHNlcnZpY2UsIG1ldGhvZCwgcGFyYW1zKQogIEZpbGUgIi9Vc2Vycy9sbG9uY2hqL1Byb2plY3RzL2ppYnUvamlidS1vZG9vL3NyYy9vZG9vL29kb28vaHR0cC5weSIsIGxpbmUgMTE4LCBpbiBkaXNwYXRjaF9ycGMKICAgIHJlc3VsdCA9IGRpc3BhdGNoKG1ldGhvZCwgcGFyYW1zKQpVbmJvdW5kTG9jYWxFcnJvcjogbG9jYWwgdmFyaWFibGUgJ2Rpc3BhdGNoJyByZWZlcmVuY2VkIGJlZm9yZSBhc3NpZ25tZW50Cjwvc3RyaW5nPjwvdmFsdWU+CjwvbWVtYmVyPgo8L3N0cnVjdD48L3ZhbHVlPgo8L2ZhdWx0Pgo8L21ldGhvZFJlc3BvbnNlPgo=",
+        "ContentLength": 671,
+        "TransferEncoding": null,
+        "Trailer": null,
+        "TLS": null
+      },
+      "ErrType": "",
+      "ErrMsg": ""
+    }
+  ]
+}

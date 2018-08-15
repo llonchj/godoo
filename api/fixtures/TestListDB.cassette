@@ -1,0 +1,59 @@
+{
+  "Name": "TestListDB",
+  "Path": "./fixtures",
+  "Tracks": [
+    {
+      "Request": {
+        "Method": "POST",
+        "URL": {
+          "Scheme": "http",
+          "Opaque": "",
+          "User": null,
+          "Host": "localhost:8069",
+          "Path": "/xmlrpc/2/db",
+          "RawPath": "",
+          "ForceQuery": false,
+          "RawQuery": "",
+          "Fragment": ""
+        },
+        "Header": {
+          "Content-Length": [
+            "109"
+          ],
+          "Content-Type": [
+            "text/xml"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48bWV0aG9kQ2FsbD48bWV0aG9kTmFtZT5saXN0PC9tZXRob2ROYW1lPjxwYXJhbXM+PC9wYXJhbXM+PC9tZXRob2RDYWxsPg=="
+      },
+      "Response": {
+        "Status": "200 OK",
+        "StatusCode": 200,
+        "Proto": "HTTP/1.0",
+        "ProtoMajor": 1,
+        "ProtoMinor": 0,
+        "Header": {
+          "Content-Length": [
+            "138"
+          ],
+          "Content-Type": [
+            "text/xml; charset=utf-8"
+          ],
+          "Date": [
+            "Wed, 15 Aug 2018 21:37:37 GMT"
+          ],
+          "Server": [
+            "Werkzeug/0.14.1 Python/3.7.0"
+          ]
+        },
+        "Body": "PD94bWwgdmVyc2lvbj0nMS4wJz8+CjxtZXRob2RSZXNwb25zZT4KPHBhcmFtcz4KPHBhcmFtPgo8dmFsdWU+PGFycmF5PjxkYXRhPgo8L2RhdGE+PC9hcnJheT48L3ZhbHVlPgo8L3BhcmFtPgo8L3BhcmFtcz4KPC9tZXRob2RSZXNwb25zZT4K",
+        "ContentLength": 138,
+        "TransferEncoding": null,
+        "Trailer": null,
+        "TLS": null
+      },
+      "ErrType": "",
+      "ErrMsg": ""
+    }
+  ]
+}

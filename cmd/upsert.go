@@ -88,7 +88,8 @@ func upsert(cmd *cobra.Command, args []string) {
 
 	for _, arg := range args {
 		var content map[string]map[string]interface{}
-		err = c.DoRequest("fields_get", arg, []interface{}{}, map[string][]string{"attributes": []string{"type"}}, &content)
+		err = c.DoRequest("fields_get", arg, []interface{}{},
+			map[string][]string{"attributes": []string{"type"}}, &content)
 		if err != nil {
 			if err.Error() != "error: \"\" code: 2" {
 				fmt.Println(err.Error())
@@ -99,6 +100,7 @@ func upsert(cmd *cobra.Command, args []string) {
 			fmt.Println(fmt.Sprintf("WARN: The model %s was not found", arg))
 			continue
 		}
+		// fmt.Println(arg, "FIELDS", content)
 		err = generator.GenerateTypes(pkg, path, typesDir, arg, generateContent(content))
 		if err != nil {
 			fmt.Println(err.Error())

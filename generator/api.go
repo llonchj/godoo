@@ -9,10 +9,16 @@ import (
 )
 
 func GenerateBaseAPI(pkg, path, basePath string) error {
-	s := FSMustString(false, "/api/client.go")
-	s = strings.Replace(s, "package api", "package "+pkg, 1)
-	s = strings.Replace(s, "\"github.com/llonchj/godoo/types\"", "\""+filepath.Join(path, pkg, "types")+"\"", 1)
-	ioutil.WriteFile(filepath.Join(basePath, "client.go"), []byte(s), 0644)
+	for _, file := range []string{"client.go"} {
+		s := FSMustString(false, "/api/"+file)
+		s = strings.Replace(s, "package api", "package "+pkg, 1)
+		s = strings.Replace(s,
+			"\"github.com/llonchj/godoo/types\"",
+			"\""+filepath.Join(path, pkg, "types")+"\"", 1)
+		if err := ioutil.WriteFile(filepath.Join(basePath, file), []byte(s), 0644); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
