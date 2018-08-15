@@ -18,6 +18,14 @@
   revision = "959962c1b48bbdbfbba4d59d58a8c15ff3fb9b22"
 
 [[projects]]
+  digest = "1:a0183aa9cada6f054a1b10e5cd69f47259749c687ca20b7f8703008137d1a855"
+  name = "github.com/seborama/govcr"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "9e77e74cccb8f13c6d3e069f0a0f16b2e3ee54ae"
+  version = "2.4.1"
+
+[[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -38,6 +46,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/kolo/xmlrpc",
+    "github.com/seborama/govcr",
     "github.com/spf13/cobra",
   ]
   solver-name = "gps-cdcl"
