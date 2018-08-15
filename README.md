@@ -1,47 +1,15 @@
 # godoo
 
-	go generate; and go install .
-
 > This project is a fork of [github.com/antony360/go-odoo](https://github.com/antony360/go-odoo)
 
 A Odoo API client enabling Go programs to interact with Odoo in a simple and uniform way.
 
-## Coverage
-
-This API client package covers all basic functions from the odoo API.
-This include all calls to the following services :
-
-- [x] Login
-- [x] Create
-- [x] Update
-- [x] Delete
-- [x] Search
-- [x] Read
-- [x] SearchRead
-- [x] SearchCount
-- [x] DoRequest
-
-Services listed above are basic low-level functions from Odoo API, there accessible by any client.
-
-There also are high-level functions based on these low-level functions. Each model has its own functions.
-Actually we got:
-
-- [x] GetIdsByName
-- [x] GetByIds
-- [x] GetByName
-- [x] GetByField
-- [x] GetAll
-- [x] Create
-- [x] Update
-- [x] Delete
-
 ## Install
 
-```
+```bash
 go get github.com/mjibson/esc github.com/llonchj/godoo
 cd $GOPATH/github.com/llonchj/godoo
-go generate
-go install
+go generate && go install
 ```
 
 ## Using the API
@@ -90,7 +58,9 @@ func main() {
 
 ## ToDo
 
-- Tests
-- Documentation in generated files
-- New Odoo API functions (ex: report printing)
-- Database services
+- Tests 
+- Version support (8-9-10-11)
+	* Printing based on version (https://github.com/OCA/odoorpc/blob/master/odoorpc/report.py)
+- New Odoo API functions
+	* [Workflow Signals](https://www.odoo.com/documentation/8.0/api_integration.html#workflow-manipulations)
+	* [Report printing](https://www.odoo.com/documentation/8.0/api_integration.html#report-printing)
