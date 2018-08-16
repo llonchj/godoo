@@ -12,17 +12,20 @@ import (
 )
 
 const (
-	SuperAdminPassword = "admin"
-	TestDBPrefix       = "godoo_"
-	DefaultUser        = "admin"
-	DefaultPassword    = "password"
-	DefaultURL         = "http://localhost:8069"
+	SuperAdminPassword  = "admin"
+	TestDBPrefix        = "godoo_"
+	DefaultUser         = "admin"
+	DefaultPassword     = "password"
+	DefaultURL          = "http://localhost:8069"
+	VCRLogging          = true
+	VCRDisableRecording = true
 )
 
 func getClient(t *testing.T) (*api.Client, error) {
 	vcr := govcr.NewVCR(t.Name(), &govcr.VCRConfig{
-		Logging:      true,
-		CassettePath: "./fixtures",
+		Logging:          VCRLogging,
+		DisableRecording: VCRDisableRecording,
+		CassettePath:     "./fixtures",
 	})
 	config := api.Config{
 		DbName:    TestDBPrefix + "test",

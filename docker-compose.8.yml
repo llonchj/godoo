@@ -1,0 +1,13 @@
+version: '2'
+services:
+  odoo:
+    image: odoo:8
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+  db:
+    image: postgres:9.4-alpine
+    environment:
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_USER: odoo

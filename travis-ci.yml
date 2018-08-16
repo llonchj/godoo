@@ -1,0 +1,21 @@
+language: go
+
+go:
+  - "1.10"
+
+sudo: required
+
+services:
+  - docker
+
+env:
+  GOCACHE: off
+
+before_install:
+  - docker-compose up -d
+
+after_install:
+  - docker-compose down -v
+
+script:
+  - go test ./...
