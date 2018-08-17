@@ -35,11 +35,12 @@ func init() {
 }
 
 func installLanguage(cmd *cobra.Command, args []string) {
-	c, err := getClient(cmd)
+	c, err := getSession(cmd)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+
 	if err := c.CompleteSession(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)

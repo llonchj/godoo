@@ -16,7 +16,7 @@ func upsert(cmd *cobra.Command, args []string) {
 		fmt.Println("At least one argument needed")
 		return
 	}
-	c, err := getClient(cmd)
+	c, err := getSession(cmd)
 	if err != nil {
 		fmt.Println(err.Error())
 		return

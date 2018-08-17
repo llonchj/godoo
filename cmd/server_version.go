@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	api "github.com/llonchj/godoo/api"
 	"github.com/spf13/cobra"
 )
 
@@ -23,15 +22,7 @@ func init() {
 }
 
 func serverVersion(cmd *cobra.Command, args []string) {
-	uri, err := cmd.PersistentFlags().GetString("uri")
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-	config := &api.Config{
-		URI: uri,
-	}
-	c, err := config.NewClient()
+	c, err := getClient(cmd)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)

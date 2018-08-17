@@ -7,7 +7,7 @@ import (
 )
 
 func moduleAction(command string, cmd *cobra.Command, args []string) {
-	c, err := getClient(cmd)
+	c, err := getSession(cmd)
 	if err != nil {
 		fmt.Println(err.Error())
 		return

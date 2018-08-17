@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"net/http"
+	"net/url"
 	"reflect"
 
 	"github.com/kolo/xmlrpc"
@@ -11,32 +12,35 @@ import (
 )
 
 var (
+	//ErrUnauthorized is a authentication error
 	ErrUnauthorized = errors.New("unauthorized")
 )
 
-//Config structure for Odoo
-type Config struct {
-	DbName    string
-	User      string
-	Password  string
-	URI       string
-	Transport http.RoundTripper
-}
-
-//CommonClient
+//CommonClient is the xmlrpc endpoint for common service
 type CommonClient struct {
 	*xmlrpc.Client
 }
 
-//DBClient
+//DBClient is the xmlrpc endpoint for db service
 type DBClient struct {
 	*xmlrpc.Client
 }
 
-//ReportClient
+//ReportClient is the xmlrpc endpoint for report service
 type ReportClient struct {
 	*xmlrpc.Client
 }
+
+//Version server response
+type Version struct {
+	ServerVersion     string        `xmlrpc:"server_version"`
+	ServerVersionInfo []interface{} `xmlrpc:"server_version_info"`
+	ServerSerie       string        `xmlrpc:"server_serie"`
+	ProtocolVersion   int64         `xmlrpc:"protocol_version"`
+}
+
+//Languages server response
+type Languages [][]string
 
 //Client instance for ODOO
 type Client struct {
@@ -44,55 +48,84 @@ type Client struct {
 	ObjectClient *xmlrpc.Client
 	DbClient     *DBClient
 	ReportClient *ReportClient
-	Session      *Session
+
+	URL *url.URL
+
+	version *Version
 }
 
-//Session instance for ODOO
 type Session struct {
+	Client   *Client
 	DbName   string
 	User     string
 	Password string
-	UID      int64
+
+	UID int64
 }
 
 //NewClient creates a new ODOO Client
-func (config *Config) NewClient() (*Client, error) {
-	commonClient, err := GetCommonClient(config.URI, config.Transport)
+func NewClient(URL string, Transport http.RoundTripper) (*Client, error) {
+	u, err := url.Parse(URL)
 	if err != nil {
 		return nil, err
 	}
-	objectClient, err := GetObjectClient(config.URI, config.Transport)
+
+	commonClient, err := GetCommonClient(u.String(), Transport)
 	if err != nil {
 		return nil, err
 	}
-	dbClient, err := GetDbClient(config.URI, config.Transport)
+	objectClient, err := GetObjectClient(u.String(), Transport)
 	if err != nil {
 		return nil, err
 	}
-	reportClient, err := GetReportClient(config.URI, config.Transport)
+	dbClient, err := GetDbClient(u.String(), Transport)
 	if err != nil {
 		return nil, err
 	}
+	reportClient, err := GetReportClient(u.String(), Transport)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Client{
 		CommonClient: commonClient,
 		ObjectClient: objectClient,
 		DbClient:     dbClient,
 		ReportClient: reportClient,
-		Session: &Session{
-			User:     config.User,
-			Password: config.Password,
-			DbName:   config.DbName,
-		},
+		URL:          u,
 	}, err
 }
 
+//NewSession creates a new ODOO Session
+func (client *Client) NewSession(DbName, User, Password string) *Session {
+	return &Session{
+		Client:   client,
+		User:     User,
+		Password: Password,
+		DbName:   DbName,
+	}
+}
+
+//Version returns the version of the server
+func (c *Client) Version() (*Version, error) {
+	if c.version != nil {
+		return c.version, nil
+	}
+	var err error
+	c.version, err = c.CommonClient.Version()
+	if err != nil {
+		return nil, err
+	}
+	return c.version, err
+}
+
 //CompleteSession authenticates credentials and sets session UID
-func (c *Client) CompleteSession() error {
-	uid, err := c.CommonClient.Authenticate(c.Session.DbName, c.Session.User, c.Session.Password, nil)
+func (s *Session) CompleteSession() error {
+	uid, err := s.Client.CommonClient.Authenticate(s.DbName, s.User, s.Password, nil)
 	if err != nil {
 		return err
 	}
-	c.Session.UID = uid
+	s.UID = uid
 	return nil
 }
 
@@ -129,27 +162,27 @@ func GetReportClient(uri string, transport http.RoundTripper) (*ReportClient, er
 }
 
 //Create instantiates a new model with given args returning elem
-func (c *Client) Create(model string, args []interface{}, options interface{}, elem interface{}) error {
+func (c *Session) Create(model string, args []interface{}, options interface{}, elem interface{}) error {
 	return c.DoRequest("create", model, args, options, elem)
 }
 
 //Update updates model instances
-func (c *Client) Update(model string, args []interface{}, options interface{}) error {
+func (c *Session) Update(model string, args []interface{}, options interface{}) error {
 	return c.DoRequest("write", model, args, options, nil)
 }
 
 //Delete deletes the model
-func (c *Client) Delete(model string, args []interface{}, options interface{}) error {
+func (c *Session) Delete(model string, args []interface{}, options interface{}) error {
 	return c.DoRequest("unlink", model, args, options, nil)
 }
 
 //Search searches
-func (c *Client) Search(model string, args []interface{}, options interface{}, elem interface{}) error {
+func (c *Session) Search(model string, args []interface{}, options interface{}, elem interface{}) error {
 	return c.DoRequest("search", model, args, options, elem)
 }
 
 //Read a element
-func (c *Client) Read(model string, args []interface{}, options interface{}, elem interface{}) error {
+func (c *Session) Read(model string, args []interface{}, options interface{}, elem interface{}) error {
 	ne := elem.(types.Type).NilableType()
 	err := c.DoRequest("read", model, args, options, ne)
 	if err == nil {
@@ -159,7 +192,7 @@ func (c *Client) Read(model string, args []interface{}, options interface{}, ele
 }
 
 //SearchRead a
-func (c *Client) SearchRead(model string, args []interface{}, options interface{}, elem interface{}) error {
+func (c *Session) SearchRead(model string, args []interface{}, options interface{}, elem interface{}) error {
 	ne := elem.(types.Type).NilableType()
 	err := c.DoRequest("search_read", model, args, options, ne)
 	if err == nil {
@@ -169,72 +202,72 @@ func (c *Client) SearchRead(model string, args []interface{}, options interface{
 }
 
 //SearchCount returns the count of records matching a search for a specified model.
-func (c *Client) SearchCount(model string, args []interface{}, options interface{}, elem interface{}) error {
+func (c *Session) SearchCount(model string, args []interface{}, options interface{}, elem interface{}) error {
 	return c.DoRequest("search_count", model, args, options, elem)
 }
 
 //DoRequest invokes a method over a model
-func (c *Client) DoRequest(method string, model string, args []interface{}, options interface{}, elem interface{}) error {
-	return c.ObjectClient.Call("execute_kw",
+func (s *Session) DoRequest(method string, model string, args []interface{}, options interface{}, elem interface{}) error {
+	return s.Client.ObjectClient.Call("execute_kw",
 		[]interface{}{
-			c.Session.DbName,
-			c.Session.UID,
-			c.Session.Password,
+			s.DbName,
+			s.UID,
+			s.Password,
 			model,
 			method,
 			args,
 			options}, elem)
 }
 
-func (c *Client) getIdsByName(model string, name string, options interface{}) ([]int64, error) {
+func (c *Session) getIdsByName(model string, name string, options interface{}) ([]int64, error) {
 	var ids []int64
 	err := c.Search(model, []interface{}{[]string{"name", "=", name}}, options, &ids)
 	return ids, err
 }
 
-func (c *Client) getByIds(model string, ids []int64, options interface{}, elem interface{}) error {
+func (c *Session) getByIds(model string, ids []int64, options interface{}, elem interface{}) error {
 	err := c.Read(model, []interface{}{ids}, options, elem)
 	return err
 }
 
-func (c *Client) getByName(model string, name string, options interface{}, elem interface{}) error {
+func (c *Session) getByName(model string, name string, options interface{}, elem interface{}) error {
 	err := c.SearchRead(model, []interface{}{[]interface{}{[]string{"name", "=", name}}}, options, elem)
 	return err
 }
 
-func (c *Client) getByField(model string, field string, value string, options interface{}, elem interface{}) error {
+func (c *Session) getByField(model string, field string, value string, options interface{}, elem interface{}) error {
 	err := c.SearchRead(model, []interface{}{[]interface{}{[]string{field, "=", value}}}, options, elem)
 	return err
 }
 
-func (c *Client) getAll(model string, options interface{}, elem interface{}) error {
+func (c *Session) getAll(model string, options interface{}, elem interface{}) error {
 	err := c.SearchRead(model, []interface{}{[]interface{}{}}, options, elem)
 	return err
 }
 
-func (c *Client) create(model string, fields map[string]interface{}, relation *types.Relations, options interface{}) (int64, error) {
+func (c *Session) create(model string, fields map[string]interface{}, relations *types.Relations, options interface{}) (int64, error) {
 	var id int64
-	if relation != nil {
-		types.HandleRelations(&fields, relation)
+	if relations != nil {
+		relations.Handle(&fields)
 	}
 	err := c.Create(model, []interface{}{fields}, options, &id)
 	return id, err
 }
 
-func (c *Client) update(model string, ids []int64, fields map[string]interface{}, relation *types.Relations, options interface{}) error {
-	if relation != nil {
-		types.HandleRelations(&fields, relation)
+func (c *Session) update(model string, ids []int64, fields map[string]interface{}, relations *types.Relations, options interface{}) error {
+	if relations != nil {
+		relations.Handle(&fields)
 	}
 	err := c.Update(model, []interface{}{ids, fields}, options)
 	return err
 }
 
-func (c *Client) delete(model string, ids []int64, options interface{}) error {
+func (c *Session) delete(model string, ids []int64, options interface{}) error {
 	return c.Delete(model, []interface{}{ids}, options)
 }
 
 //GetAllModels returns available models
-func (c *Client) GetAllModels() ([]string, error) {
+func (c *Session) GetAllModels() ([]string, error) {
 	var content []map[string]interface{}
 	err := c.DoRequest("search_read", "ir.model", []interface{}{[]interface{}{}}, nil, &content)
 	if err != nil {
@@ -253,7 +286,7 @@ func (c *Client) GetAllModels() ([]string, error) {
 
 // Ref returns the model,id of a external identifier. This function is inspired
 // in Odoo new api self.env.ref function.
-func (c *Client) Ref(module, name string) (string, int64, error) {
+func (c *Session) Ref(module, name string) (string, int64, error) {
 	var content []map[string]interface{}
 	err := c.DoRequest("search_read", "ir.model.data",
 		[]interface{}{
@@ -268,15 +301,7 @@ func (c *Client) Ref(module, name string) (string, int64, error) {
 	return content[0]["model"].(string), content[0]["res_id"].(int64), nil
 }
 
-type Version struct {
-	ServerVersion     string        `xmlrpc:"server_version"`
-	ServerVersionInfo []interface{} `xmlrpc:"server_version_info"`
-	ServerSerie       string        `xmlrpc:"server_serie"`
-	ProtocolVersion   int64         `xmlrpc:"protocol_version"`
-}
-
-//Authenticate
-//CompleteSession authenticates credentials and sets session UID
+//Authenticate authenticates credentials and sets session UID
 func (c *CommonClient) Authenticate(DbName, User, Password string, UserAgentEnv map[string]interface{}) (int64, error) {
 	var uid interface{}
 	err := c.Call("authenticate", []interface{}{DbName, User, Password, UserAgentEnv}, &uid)
@@ -292,7 +317,7 @@ func (c *CommonClient) Authenticate(DbName, User, Password string, UserAgentEnv 
 	return i, nil
 }
 
-//Version
+//Version returns the odoo Version
 func (c *CommonClient) Version() (*Version, error) {
 	var version Version
 	err := c.Call("version", []interface{}{}, &version)
@@ -347,8 +372,6 @@ func (c *DBClient) List() ([]string, error) {
 	err := c.Call("list", []interface{}{}, &dbList)
 	return dbList, err
 }
-
-type Languages [][]string
 
 //ListLanguages lists databases
 func (c *DBClient) ListLanguages() (Languages, error) {

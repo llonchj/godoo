@@ -10,11 +10,15 @@ func getClient(cmd *cobra.Command) (*api.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	return api.NewClient(uri, nil)
+}
+
+func getSession(cmd *cobra.Command) (*api.Session, error) {
 	db, err := cmd.PersistentFlags().GetString("database")
 	if err != nil {
 		return nil, err
 	}
-	admin, err := cmd.PersistentFlags().GetString("username")
+	user, err := cmd.PersistentFlags().GetString("username")
 	if err != nil {
 		return nil, err
 	}
@@ -22,11 +26,10 @@ func getClient(cmd *cobra.Command) (*api.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	config := &api.Config{
-		DbName:   db,
-		User:     admin,
-		Password: password,
-		URI:      uri,
+
+	client, err := getClient(cmd)
+	if err != nil {
+		return nil, err
 	}
-	return config.NewClient()
+	return client.NewSession(db, user, password), nil
 }

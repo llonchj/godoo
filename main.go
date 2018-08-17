@@ -1,4 +1,4 @@
-//go:generate esc -o generator/static.go -pkg generator tmpl types api
+//go:generate esc -o generator/static.go -pkg generator tmpl types api/client.go
 
 package main
 
