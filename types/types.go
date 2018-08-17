@@ -5,32 +5,92 @@ import (
 	"time"
 )
 
-type Relations []Relation
+type Code int64
 
-type Relation struct {
-	FieldName               string
-	CreateNewFields         []map[string]interface{}
-	CreateExistantFieldsIds []int64
-	UpdateFields            []UpdateField
-	DeleteFieldsIds         []int64
-	RemoveFieldsIds         []int64
-	RemoveAll               bool
-	ReplaceFieldsIds        []int64
+const (
+	AddRecordCode      Code = 0
+	UpdateRecordCode   Code = 1
+	DeleteRecordCode   Code = 2
+	DeleteIDCode       Code = 3
+	AddIDCode          Code = 4
+	RemoveAllIDsCode   Code = 5
+	ReplaceWithIDsCode Code = 6
+)
+
+//Command represents a interface for mutations
+type Command interface {
+	Command() []interface{}
 }
 
-type UpdateField struct {
-	Id     int64
-	Values map[string]interface{}
+type Commands []Command
+
+//Commands returns the list of commands as Command structure suitable for odoo
+//One2Many and Many2Many create/write operation
+func (c *Commands) Commands() []interface{} {
+	result := []interface{}{}
+	for _, command := range *c {
+		result = append(result, command.Command())
+	}
+	return result
 }
 
+type Record map[string]interface{}
+
+type AddRecord []Record
+
+func (r AddRecord) Command() []interface{} { return []interface{}{AddRecordCode, nil, r} }
+
+type UpdateRecord struct {
+	ID     int64
+	Values Record
+}
+
+func (r UpdateRecord) Command() []interface{} {
+	return []interface{}{UpdateRecordCode, r.ID, r.Values}
+}
+
+type DeleteID int64
+
+func (r DeleteID) Command() []interface{} {
+	return []interface{}{DeleteIDCode, r, nil}
+}
+
+type DeleteRecord int64
+
+func (r DeleteRecord) Command() []interface{} {
+	return []interface{}{DeleteRecordCode, r, nil}
+}
+
+type AddID int64
+
+func (r AddID) Command() []interface{} { return []interface{}{AddIDCode, r, nil} }
+
+type RemoveAllIDs struct{}
+
+func (r RemoveAllIDs) Command() []interface{} {
+	return []interface{}{RemoveAllIDsCode, nil, nil}
+}
+
+type ReplaceWithIDs []int64
+
+func (r ReplaceWithIDs) Command() []interface{} {
+	return []interface{}{ReplaceWithIDsCode, nil, r}
+}
+
+//Relations is a list of Relation
+type Relations map[string]Commands
+
+//NilableType is ...
 type NilableType interface {
 	GetType() interface{}
 }
 
+//Type is ...
 type Type interface {
 	NilableType() interface{}
 }
 
+//Many2One is ...
 type Many2One struct {
 	ID   int64
 	Name string
@@ -79,48 +139,9 @@ func load(ns interface{}, s interface{}) interface{} {
 	return s
 }
 
-func HandleRelations(fields *map[string]interface{}, args *Relations) {
-	for _, arg := range *args {
-		var am []interface{}
-		if len(arg.CreateNewFields) > 0 {
-			for _, field := range arg.CreateNewFields {
-				am = append(am, AppendValues(0, nil, field))
-			}
-		}
-		if len(arg.CreateExistantFieldsIds) > 0 {
-			for _, id := range arg.CreateExistantFieldsIds {
-				am = append(am, AppendValues(4, id, nil))
-			}
-		}
-		if len(arg.UpdateFields) > 0 {
-			for _, field := range arg.UpdateFields {
-				am = append(am, AppendValues(1, field.Id, field.Values))
-			}
-		}
-		if len(arg.DeleteFieldsIds) > 0 {
-			for _, id := range arg.DeleteFieldsIds {
-				am = append(am, AppendValues(2, id, nil))
-			}
-		}
-		if len(arg.RemoveFieldsIds) > 0 {
-			for _, id := range arg.RemoveFieldsIds {
-				am = append(am, AppendValues(3, id, nil))
-			}
-		}
-		if arg.RemoveAll {
-			am = append(am, AppendValues(5, nil, nil))
-		}
-		if len(arg.ReplaceFieldsIds) > 0 {
-			am = append(am, AppendValues(6, nil, arg.ReplaceFieldsIds))
-		}
-		(*fields)[arg.FieldName] = am
+//Handle completes fields structure with relations
+func (r *Relations) Handle(fields *map[string]interface{}) {
+	for field, commands := range *r {
+		(*fields)[field] = commands.Commands()
 	}
-}
-
-func AppendValues(actionId int, Ids interface{}, values interface{}) []interface{} {
-	var m []interface{}
-	m = append(m, actionId)
-	m = append(m, Ids)
-	m = append(m, values)
-	return m
 }
