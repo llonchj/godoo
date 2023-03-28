@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/kolo/xmlrpc"
-	"github.com/llonchj/godoo/types"
+	"github.com/llonchj/godoo/internal/types"
 )
 
 var (

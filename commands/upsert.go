@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	generator "github.com/llonchj/godoo"
+	generator "github.com/llonchj/godoo/internal"
 
 	"github.com/spf13/cobra"
 )

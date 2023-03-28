@@ -1,7 +1,7 @@
 package commands
 
 import (
-	api "github.com/llonchj/godoo/api"
+	api "github.com/llonchj/godoo/internal/api"
 	"github.com/spf13/cobra"
 )
 
