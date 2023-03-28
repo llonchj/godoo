@@ -16,22 +16,22 @@ var (
 	ErrUnauthorized = errors.New("unauthorized")
 )
 
-//CommonClient is the xmlrpc endpoint for common service
+// CommonClient is the xmlrpc endpoint for common service
 type CommonClient struct {
 	*xmlrpc.Client
 }
 
-//DBClient is the xmlrpc endpoint for db service
+// DBClient is the xmlrpc endpoint for db service
 type DBClient struct {
 	*xmlrpc.Client
 }
 
-//ReportClient is the xmlrpc endpoint for report service
+// ReportClient is the xmlrpc endpoint for report service
 type ReportClient struct {
 	*xmlrpc.Client
 }
 
-//Version server response
+// Version server response
 type Version struct {
 	ServerVersion     string        `xmlrpc:"server_version"`
 	ServerVersionInfo []interface{} `xmlrpc:"server_version_info"`
@@ -39,10 +39,10 @@ type Version struct {
 	ProtocolVersion   int64         `xmlrpc:"protocol_version"`
 }
 
-//Languages server response
+// Languages server response
 type Languages [][]string
 
-//Client instance for ODOO
+// Client instance for ODOO
 type Client struct {
 	CommonClient *CommonClient
 	ObjectClient *xmlrpc.Client
@@ -63,7 +63,7 @@ type Session struct {
 	UID int64
 }
 
-//NewClient creates a new ODOO Client
+// NewClient creates a new ODOO Client
 func NewClient(URL string, Transport http.RoundTripper) (*Client, error) {
 	u, err := url.Parse(URL)
 	if err != nil {
@@ -100,7 +100,7 @@ func NewClient(URL string, Transport http.RoundTripper) (*Client, error) {
 	}, err
 }
 
-//NewSession creates a new ODOO Session
+// NewSession creates a new ODOO Session
 func (client *Client) NewSession(DbName, User, Password string) *Session {
 	return &Session{
 		Client:   client,
@@ -110,7 +110,7 @@ func (client *Client) NewSession(DbName, User, Password string) *Session {
 	}
 }
 
-//Version returns the version of the server
+// Version returns the version of the server
 func (c *Client) Version() (*Version, error) {
 	if c.version != nil {
 		return c.version, nil
@@ -123,7 +123,7 @@ func (c *Client) Version() (*Version, error) {
 	return c.version, err
 }
 
-//CompleteSession authenticates credentials and sets session UID
+// CompleteSession authenticates credentials and sets session UID
 func (s *Session) CompleteSession() error {
 	uid, err := s.Client.CommonClient.Authenticate(s.DbName, s.User, s.Password, nil)
 	if err != nil {
@@ -133,12 +133,12 @@ func (s *Session) CompleteSession() error {
 	return nil
 }
 
-//GetObjectClient invokes object endpoint
+// GetObjectClient invokes object endpoint
 func GetObjectClient(uri string, transport http.RoundTripper) (*xmlrpc.Client, error) {
 	return xmlrpc.NewClient(uri+"/xmlrpc/2/object", transport)
 }
 
-//GetCommonClient invokes common endpoint
+// GetCommonClient invokes common endpoint
 func GetCommonClient(uri string, transport http.RoundTripper) (*CommonClient, error) {
 	x, err := xmlrpc.NewClient(uri+"/xmlrpc/2/common", transport)
 	if err != nil {
@@ -147,7 +147,7 @@ func GetCommonClient(uri string, transport http.RoundTripper) (*CommonClient, er
 	return &CommonClient{Client: x}, nil
 }
 
-//GetDbClient invokes db endpoint
+// GetDbClient invokes db endpoint
 func GetDbClient(uri string, transport http.RoundTripper) (*DBClient, error) {
 	x, err := xmlrpc.NewClient(uri+"/xmlrpc/2/db", transport)
 	if err != nil {
@@ -156,7 +156,7 @@ func GetDbClient(uri string, transport http.RoundTripper) (*DBClient, error) {
 	return &DBClient{Client: x}, nil
 }
 
-//GetReportClient invokes report endpoint
+// GetReportClient invokes report endpoint
 func GetReportClient(uri string, transport http.RoundTripper) (*ReportClient, error) {
 	x, err := xmlrpc.NewClient(uri+"/xmlrpc/2/report", transport)
 	if err != nil {
@@ -165,27 +165,27 @@ func GetReportClient(uri string, transport http.RoundTripper) (*ReportClient, er
 	return &ReportClient{Client: x}, nil
 }
 
-//Create instantiates a new model with given args returning elem
+// Create instantiates a new model with given args returning elem
 func (c *Session) Create(model string, args []interface{}, options interface{}, elem interface{}) error {
 	return c.DoRequest("create", model, args, options, elem)
 }
 
-//Update updates model instances
+// Update updates model instances
 func (c *Session) Update(model string, args []interface{}, options interface{}) error {
 	return c.DoRequest("write", model, args, options, nil)
 }
 
-//Delete deletes the model
+// Delete deletes the model
 func (c *Session) Delete(model string, args []interface{}, options interface{}) error {
 	return c.DoRequest("unlink", model, args, options, nil)
 }
 
-//Search searches
+// Search searches
 func (c *Session) Search(model string, args []interface{}, options interface{}, elem interface{}) error {
 	return c.DoRequest("search", model, args, options, elem)
 }
 
-//Read a element
+// Read a element
 func (c *Session) Read(model string, args []interface{}, options interface{}, elem interface{}) error {
 	ne := elem.(types.Type).NilableType()
 	err := c.DoRequest("read", model, args, options, ne)
@@ -195,7 +195,7 @@ func (c *Session) Read(model string, args []interface{}, options interface{}, el
 	return err
 }
 
-//SearchRead a
+// SearchRead a
 func (c *Session) SearchRead(model string, args []interface{}, options interface{}, elem interface{}) error {
 	ne := elem.(types.Type).NilableType()
 	err := c.DoRequest("search_read", model, args, options, ne)
@@ -205,12 +205,12 @@ func (c *Session) SearchRead(model string, args []interface{}, options interface
 	return err
 }
 
-//SearchCount returns the count of records matching a search for a specified model.
+// SearchCount returns the count of records matching a search for a specified model.
 func (c *Session) SearchCount(model string, args []interface{}, options interface{}, elem interface{}) error {
 	return c.DoRequest("search_count", model, args, options, elem)
 }
 
-//DoRequest invokes a method over a model
+// DoRequest invokes a method over a model
 func (s *Session) DoRequest(method string, model string, args []interface{}, options interface{}, elem interface{}) error {
 	return s.Client.ObjectClient.Call("execute_kw",
 		[]interface{}{
@@ -270,7 +270,7 @@ func (c *Session) delete(model string, ids []int64, options interface{}) error {
 	return c.Delete(model, []interface{}{ids}, options)
 }
 
-//GetAllModels returns available models
+// GetAllModels returns available models
 func (c *Session) GetAllModels() ([]string, error) {
 	var content []map[string]interface{}
 	err := c.DoRequest("search_read", "ir.model", []interface{}{[]interface{}{}}, nil, &content)
@@ -305,7 +305,7 @@ func (c *Session) Ref(module, name string) (string, int64, error) {
 	return content[0]["model"].(string), content[0]["res_id"].(int64), nil
 }
 
-//Authenticate authenticates credentials and sets session UID
+// Authenticate authenticates credentials and sets session UID
 func (c *CommonClient) Authenticate(DbName, User, Password string, UserAgentEnv map[string]interface{}) (int64, error) {
 	var uid interface{}
 	err := c.Call("authenticate", []interface{}{DbName, User, Password, UserAgentEnv}, &uid)
@@ -321,7 +321,7 @@ func (c *CommonClient) Authenticate(DbName, User, Password string, UserAgentEnv 
 	return i, nil
 }
 
-//Version returns the odoo Version
+// Version returns the odoo Version
 func (c *CommonClient) Version() (*Version, error) {
 	var version Version
 	err := c.Call("version", []interface{}{}, &version)
@@ -331,19 +331,19 @@ func (c *CommonClient) Version() (*Version, error) {
 	return &version, err
 }
 
-//Create invokes a method over a model
+// Create invokes a method over a model
 func (c *DBClient) Create(adminPassword, db string, demo bool, lang, password string, result interface{}) error {
 	return c.Call("create_database",
 		[]interface{}{adminPassword, db, demo, lang, password, "admin", "ES"}, result)
 }
 
-//Duplicate invokes a method over a model
+// Duplicate invokes a method over a model
 func (c *DBClient) Duplicate(adminPassword, dst, src string, result interface{}) error {
 	return c.Call("duplicate_database",
 		[]interface{}{adminPassword, src, dst}, result)
 }
 
-//Rename invokes a method over a model
+// Rename invokes a method over a model
 func (c *DBClient) Rename(adminPassword, dst, src string) (bool, error) {
 	var result bool
 	err := c.Call("rename",
@@ -351,7 +351,7 @@ func (c *DBClient) Rename(adminPassword, dst, src string) (bool, error) {
 	return result, err
 }
 
-//Dump invokes a method over a model
+// Dump invokes a method over a model
 func (c *DBClient) Dump(adminPassword, db, format string) ([]byte, error) {
 	var result string
 	err := c.Call("dump", []interface{}{adminPassword, db, format}, &result)
@@ -362,7 +362,7 @@ func (c *DBClient) Dump(adminPassword, db, format string) ([]byte, error) {
 	return decoded, err
 }
 
-//Restore invokes a method over a model
+// Restore invokes a method over a model
 func (c *DBClient) Restore(adminPassword, db string, data []byte, copy bool) (bool, error) {
 	var result bool
 	err := c.Call("restore", []interface{}{adminPassword, db,
@@ -370,14 +370,14 @@ func (c *DBClient) Restore(adminPassword, db string, data []byte, copy bool) (bo
 	return result, err
 }
 
-//List lists databases
+// List lists databases
 func (c *DBClient) List() ([]string, error) {
 	var dbList []string
 	err := c.Call("list", []interface{}{}, &dbList)
 	return dbList, err
 }
 
-//ListLanguages lists databases
+// ListLanguages lists databases
 func (c *DBClient) ListLanguages() (Languages, error) {
 	var languages Languages
 	err := c.Call("list_lang", []interface{}{}, &languages)
@@ -393,35 +393,35 @@ func (c *DBClient) ListLanguages() (Languages, error) {
 // 	return countries, err
 // }
 
-//Exist lists databases
+// Exist lists databases
 func (c *DBClient) Exist(db string) (bool, error) {
 	var result bool
 	err := c.Call("db_exist", []interface{}{db}, &result)
 	return result, err
 }
 
-//Drop lists databases
+// Drop lists databases
 func (c *DBClient) Drop(adminPassword, db string) (bool, error) {
 	var result bool
 	err := c.Call("drop", []interface{}{adminPassword, db}, &result)
 	return result, err
 }
 
-//ServerVersion returns ODOO version
+// ServerVersion returns ODOO version
 func (c *DBClient) ServerVersion() (string, error) {
 	var result string
 	err := c.Call("server_version", []interface{}{}, &result)
 	return result, err
 }
 
-//ChangeAdminPassword changes SuperAdmin password
+// ChangeAdminPassword changes SuperAdmin password
 func (c *DBClient) ChangeAdminPassword(old, new string) (bool, error) {
 	var result bool
 	err := c.Call("change_admin_password", []interface{}{old, new}, &result)
 	return result, err
 }
 
-//RenderReport renders a report
+// RenderReport renders a report
 func (c *ReportClient) RenderReport(ReportName string, IDs []int64) ([]byte, error) {
 	var result string
 	err := c.Call("render_report", []interface{}{ReportName, IDs}, &result)
