@@ -70,6 +70,10 @@ func NewClient(URL string, Transport http.RoundTripper) (*Client, error) {
 		return nil, err
 	}
 
+	if Transport == nil {
+		Transport = http.DefaultTransport
+	}
+
 	commonClient, err := GetCommonClient(u.String(), Transport)
 	if err != nil {
 		return nil, err
