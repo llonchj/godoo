@@ -7,8 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/llonchj/godoo/snaker"
-	// "github.com/iancoleman/strcase"
+	"github.com/serenize/snaker"
 )
 
 var convertTypes = map[string]string{
@@ -62,8 +61,12 @@ type Field struct {
 }
 
 func GenerateBaseTypes(pkg, path, basePath string) error {
-	s := FSMustString(false, "/types/types.go")
-	ioutil.WriteFile(filepath.Join(basePath, "types.go"), []byte(s), 0644)
+	b, err := content.ReadFile("types/types.go")
+	if err != nil {
+		return err
+	}
+
+	ioutil.WriteFile(filepath.Join(basePath, "types.go"), b, 0644)
 	return nil
 }
 

@@ -1,4 +1,4 @@
-package cmd
+package commands
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/llonchj/godoo/generator"
+	generator "github.com/llonchj/godoo"
 
 	"github.com/spf13/cobra"
 )

@@ -1,4 +1,4 @@
-package cmd
+package commands
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Long:  "Tool to prepare environment for odoo golang api wrapper",
 }
 
-//Execute is the entry point for the command line
+// Execute is the entry point for the command line
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

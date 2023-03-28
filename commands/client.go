@@ -1,4 +1,4 @@
-package cmd
+package commands
 
 import (
 	api "github.com/llonchj/godoo/api"
